@@ -1,6 +1,6 @@
 {
   "name": "angular-usestate",
-  "version": "0.0.12.1",
+  "version": "0.0.12.2",
   "peerDependencies": {
     "@angular/common": "^13.1.0",
     "@angular/core": "^13.1.0", 

@@ -6,7 +6,17 @@ Aim of this library is to reduce complexity in NGRX State Management and develop
 Support for Angular V13+ 
 
 ### NOTE
-This Library is built using NRWL/NX 
+This Library is built using NRWL/NX. 
+Install Using : npm i --legacy-peer-deps angular-usestate in case Using incompatible versions. 
+### Install Dependencies
+@ngrx/store
+@ngrx/effects
+@ngrx/entities
+
+### Pre-Requisite Setup in Root Module
+StoreModule.forRoot
+EffectsModule.forRoot
+HttpClientModule
 
 ## EXAMPLE CODE
 > Create Simple Variable State
@@ -39,4 +49,3 @@ You can specify the API-ENDPOINT in providers array :
     [providers]=[ {provide:API_ENDPOINT,useValue:'https://SOME-APIENDPOINT'} ]
 ```
 
-> 
