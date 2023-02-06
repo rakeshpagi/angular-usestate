@@ -200,7 +200,7 @@ export class UseApiStateDirective implements OnInit,OnChanges {
     }
     ngOnChanges(changes: SimpleChanges): void {
         if(this._init){
-            console.log('API LOAD AGAIN '); 
+            //console.log('API LOAD AGAIN '); 
             //console.log(changes)
             this.doAction(); 
         }
