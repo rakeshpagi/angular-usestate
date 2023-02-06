@@ -1,0 +1,71 @@
+<ng-container >
+    <label for="" *ngIf="label" class="form-label">{{label}}</label>
+    <ng-container [ngSwitch]="fieldType">
+         <ng-container *ngSwitchCase="'input'" [ngTemplateOutlet]="input"> </ng-container>
+         <ng-container *ngSwitchCase="'select'" [ngTemplateOutlet]="select"> </ng-container>
+         <ng-container *ngSwitchCase="'date'" [ngTemplateOutlet]="date"> </ng-container>
+         <ng-container *ngSwitchCase="'textarea'" [ngTemplateOutlet]="textarea"> </ng-container>
+         <ng-container *ngSwitchCase="'checkbox'" [ngTemplateOutlet]="checkbox"> </ng-container>
+         <ng-container *ngSwitchCase="'any'"  ><ng-content></ng-content></ng-container>
+         <ng-container *ngSwitchDefault>{{value}}</ng-container>
+    </ng-container>
+    <div   *ngIf="errorMessage!==null && formControl.errors ">
+         <small  [class]="'form-text text-danger '+errorClass " *ngFor="let kv of formControl.errors|keyvalue"  >{{ errorMessage?.[kv.key] }}</small>
+    </div>
+    <!-- <ng-container *ngIf="formControl.errors && errorMessage">
+         <small> {{'Error: '+(errorMessage)}} </small>
+    </ng-container> -->
+</ng-container>
+<ng-template #input>
+    <!-- <div class=" block p-0" [ngClass]="{'p-input-icon-left':inputIcon}" >           -->
+              <i class="pi" *ngIf="inputIcon" [ngClass]="inputIcon" ></i>          
+         <input [attr.placeholder]="placeholder"   [formGroup]="formgroup.form" [name]="name"
+           [useAutoFocus]="autofocus"  [required]="required" 
+              autocomplete="off" 
+              [class]="inputClass||' form-control'"
+              [ngClass]="{'form-control-sm':small}"              
+              (input)="oninput.next(formControl.value)"
+             [formControl]="formControl"   >                            
+    <!-- </div> -->
+</ng-template>
+<ng-template #select>
+    <!-- <div class=" block p-0" [ngClass]="{'p-input-icon-left':inputIcon}" >           -->
+          <select [formGroup]="formgroup.form" [name]="name" [required]="required" (change)="this.onchange.emit($event)" >
+               <option value="" label="Select" ></option>
+               <option *ngFor="let item of (options||[]);" [value]="item" [label]="optionLabel?item[optionLabel]:item.toString()" >
+               </option>
+          </select>    
+         <input [attr.placeholder]="placeholder"   [formGroup]="formgroup.form" [name]="name"
+           [useAutoFocus]="autofocus"  [required]="required"
+              autocomplete="off" [class]="inputClass||' form-control '"
+              [ngClass]="{'form-control-sm':true}"
+              (input)="oninput.next(formControl.value)"
+             [formControl]="formControl"   >                                
+    <!-- </div> -->
+</ng-template>
+<ng-template #date>
+    <input type="date" [name]="name" [class]="inputClass||'form-control'"
+          [ngClass]="{'form-control-sm':small}"
+          [(ngModel)]="datevalue" (ngModelChange)="updateDate($event)"
+          [useAutoFocus]="autofocus" [placeholder]="placeholder"
+             >          
+    <!-- <p-calendar [showOnFocus]="showOnFocus" [showIcon]="showdateIcon" 
+         styleClass="  w-full   " 
+        panelStyleClass="  p-0 m-0" 
+         inputStyleClass="  m-0 text-sm " [name]="name"  [eaAutoFocus]="autofocus" 
+         [required]="required" [showButtonBar]="false"  
+         autocomplete="off" class="  mb-1test"   [inputStyleClass]="'form-control '+(small?'form-control-sm':'') " 
+          dateFormat="dd-mm-yy"   [attr.placeholder]="placeholder" [placeholder]="placeholder"
+        [(ngModel)]="datevalue" (ngModelChange)="updateDate($event)"
+         appendTo="body"  ></p-calendar> -->
+</ng-template>
+<ng-template #checkbox>
+        <input type="checkbox"  [formControl]="formControl" [formGroup]="formgroup.form"  >
+         <!-- <p-checkbox [formControl]="formControl" [label]="''" [checkboxIcon]="''" labelStyleClass="hidden" 
+               [formGroup]="formgroup.form" [binary]="true"></p-checkbox> -->
+</ng-template>
+<ng-template #textarea>    
+    <textarea [formGroup]="formgroup.form" [name]="name" [rows]="3"
+         autocomplete="off" class="form-control mb-1"
+        [formControl]="formControl"   ></textarea>
+</ng-template>

@@ -1,0 +1,26 @@
+{
+  "name": "angular-usestate",
+  "version": "0.0.12.981",
+  "peerDependencies": {
+    "@angular/common": "^13.1.0",
+    "@angular/core": "^13.1.0", 
+    "@angular/forms": "~13",  
+    "@ngrx/store": "~13.0.0",
+    "@ngrx/router-store": "~13.0.0",
+    "@ngrx/effects": "~13.0.0",    
+    "@ngrx/entity": "~13.0.0",
+    "rxjs": "~7.8.0" ,
+    "dayjs": "^1.10.7"   
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "author": {
+    "name": "Rakesh S Pagi"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rakeshpagi/angular-usestate"
+  }
+
+}
