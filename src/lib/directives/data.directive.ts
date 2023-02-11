@@ -1,8 +1,8 @@
 
-import { AfterViewInit, Directive, EventEmitter, HostListener, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
+import { AfterViewInit, Directive, EventEmitter, HostListener, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { readFeatureState } from '../+state/feature-state.selectors';
-import { take } from 'rxjs';
+import { Subscription, take } from 'rxjs';
 import { loadAPIData, setFeatureState } from '../+state/feature-state.actions';
 import { FormBuilder, FormGroupDirective } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,6 +14,7 @@ export class UseStateDirective implements OnInit {
 
     constructor(private store:Store) {
             //
+            
      }
 
      @Input()
@@ -33,6 +34,7 @@ export class UseStateDirective implements OnInit {
       extendArray(array:any[],addarray:any[]){
           return [...array,...addarray]
       }
+      
       ngOnInit(): void {
           //console.log(`On Init of UseState : ${this.UseState} :${this.value} `); 
           //Restore Old State 
@@ -143,9 +145,8 @@ export class UseFormStateDirective implements OnInit,AfterViewInit {
 }
 
 
-@Directive({ selector: '[useAPIState]',
-    exportAs:'useAPIState' })
-export class UseApiStateDirective implements OnInit,OnChanges {
+@Directive({ selector: '[useAPIState]',   exportAs:'useAPIState' })
+export class UseApiStateDirective implements OnInit,OnChanges,OnDestroy {
     @Input('useAPIState')
     stateName!:string; 
     @Input()
@@ -163,6 +164,9 @@ export class UseApiStateDirective implements OnInit,OnChanges {
 
     @Input()
     loadOnInit=true; 
+
+    value:any
+    sub!:Subscription
 
     _init=false; 
 
@@ -184,7 +188,7 @@ export class UseApiStateDirective implements OnInit,OnChanges {
         this.store.dispatch(loadAPIData(
                 {  useEndpoint:this.useEndpoint,
                     contextName:this.contextName,
-                 useState:this.stateName,
+                 useState:this.stateName,serviceName:this.processName||this.stateName,
                   queryParams:this.params, onComplete: async (r)=>{
                          this.loadComplete(r)
                   },
@@ -197,6 +201,17 @@ export class UseApiStateDirective implements OnInit,OnChanges {
             if(this.loadOnInit)
                 this.doAction(); 
              this._init=true; 
+             this.sub=this.store.select(readFeatureState(this.stateName))
+                    .subscribe({
+                        next:(value)=>{
+                                this.value=value;
+                        }
+                    })
+    }
+    ngOnDestroy(): void {
+            if(this.sub){
+                 this.sub.unsubscribe();
+            }
     }
     ngOnChanges(changes: SimpleChanges): void {
         if(this._init){
@@ -209,5 +224,29 @@ export class UseApiStateDirective implements OnInit,OnChanges {
     async loadComplete(result:any){
              
              this.onloadData.next(result)
+    }
+
+    updateEntity(key:string,id:number|string,newValue:any){
+         if( typeof(this.value)==='object' && this.value?.length>0){
+             const updatevalue = (this.value as any[]).map(
+                    v=> v[key]===id?({...v,...newValue}):v
+             ); 
+             this.store.dispatch(setFeatureState({stateName:this.stateName,value:updatevalue}))
+         }
+    }
+    addEntityValue(newValue:any){
+        if( typeof(this.value)==='object'  ){             
+            if(!this.value)
+                this.value=[];
+            this.store.dispatch(setFeatureState({stateName:this.stateName,value:[...this.value,newValue ]}))
+        }       
+    }
+    deleteEntity(key:string,id:number|string){
+        if( typeof(this.value)==='object' && this.value?.length>0){
+            const updatevalue = (this.value as any[]).filter(
+                   v=> v[key]!==id
+            ); 
+            this.store.dispatch(setFeatureState({stateName:this.stateName,value:updatevalue}))
+        }
     }
 }

@@ -2,7 +2,7 @@ import { Directive, Input, HostListener, Output, EventEmitter, Optional } from "
 import { ActivatedRoute, Router } from "@angular/router";
 
 import { Store } from "@ngrx/store";
-import { doPostAPIAction, setFeatureState } from "../+state/feature-state.actions";
+import {  doDeleteAPIAction, doPostAPIAction, doPutAPIAction, setFeatureState } from "../+state/feature-state.actions";
 import { UseFormStateDirective } from "./data.directive";
 
 // eslint-disable-next-line @angular-eslint/directive-selector
@@ -56,6 +56,11 @@ export class PostAPIActionDirective {
     contextName!:string;
 
     @Input()
+    isMultipart=false 
+
+    formdata:FormData=new FormData()
+
+    @Input()
     resetFormOnComplete=true; 
 
     @Output()
@@ -72,9 +77,20 @@ export class PostAPIActionDirective {
     }
 
     
+    @Input()
+    set postFiles(files:Record<string,File>[]){
+             files?.forEach( r=> {
+                 this.formdata.append( Object.keys(r)[0], Object.values(r)[0] );
+             } );
+             if(files?.length>0){
+                 this.isMultipart=true;
+             }
+    }
+    
 
-    constructor(private store:Store, @Optional() private formState:UseFormStateDirective,
-        private router:Router,
+
+    constructor(protected store:Store, @Optional() protected formState:UseFormStateDirective,
+            protected router:Router,
             private activatedRoute:ActivatedRoute,
             
             // @Optional() @Inject(ERP_APPLICATION) private appName:string,
@@ -91,6 +107,8 @@ export class PostAPIActionDirective {
             { contextName:this.contextName,  postData:this.postData,
                  processStates:this.processStates,service:this.actionServiceName,
                  setState:this.actionsetState,
+                 isMultipart:this.isMultipart,
+                 formdata:this.formdata,
                  onComplete:async (r)=>{
                      this.onActionComplete(r)
                  },
@@ -115,3 +133,58 @@ export class PostAPIActionDirective {
              this.actionComplete.next(result);              
     }
 };
+
+// eslint-disable-next-line @angular-eslint/directive-selector
+@Directive({ selector: '[doDeleteAPIAction]' })
+export class DeleteApiActionDirective extends PostAPIActionDirective{
+
+    @Input('doDeleteAPIAction')
+   override actionServiceName!:string; 
+
+        override doAction(): void {
+            if(this.formState){
+                this.formState.doUpdateForm();
+                this.processStates=[...this.processStates,this.formState.stateName]
+            }        
+            this.store.dispatch(doDeleteAPIAction(
+                { contextName:this.contextName,  postData:this.postData,
+                     processStates:this.processStates,service:this.actionServiceName,
+                     setState:this.actionsetState, 
+                     onComplete:async (r)=>{
+                         this.onActionComplete(r)
+                     },
+                     onError: async (error) =>{
+                            console.error(error);
+                            this.onapiError.emit(error)
+                            //window.alert(error)
+                     },
+                }))
+        }
+}
+// eslint-disable-next-line @angular-eslint/directive-selector
+@Directive({ selector: '[doPutAPIAction]' })
+export class PutApiActionDirective extends PostAPIActionDirective{
+
+    @Input('doPutAPIAction')
+    override actionServiceName!:string; 
+
+        override doAction(): void {
+            if(this.formState){
+                this.formState.doUpdateForm();
+                this.processStates=[...this.processStates,this.formState.stateName]
+            }        
+            this.store.dispatch(doPutAPIAction(
+                { contextName:this.contextName,  postData:this.postData,
+                     processStates:this.processStates,service:this.actionServiceName,
+                     setState:this.actionsetState, 
+                     onComplete:async (r)=>{
+                         this.onActionComplete(r)
+                     },
+                     onError: async (error) =>{
+                            console.error(error);
+                            this.onapiError.emit(error)
+                            //window.alert(error)
+                     },
+                }))
+        }
+}

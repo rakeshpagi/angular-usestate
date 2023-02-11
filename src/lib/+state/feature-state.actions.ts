@@ -34,6 +34,24 @@ export const doPostAPIAction=createAction(
   '[FeatureState/API]Post API',
   props<{ contextName?:string,replaceEndpoint?:string,
     service?:string,processStates:string[],setState:string,
+    postData:any,isMultipart?:boolean,formdata?:FormData,
+    onComplete?: (result:any)=>Promise<any> ,
+    onError?: (error:any)=>Promise<any> 
+  }>() 
+)
+export const doDeleteAPIAction=createAction(
+  '[FeatureState/API]Delete API',
+  props<{ contextName?:string,replaceEndpoint?:string,
+    service?:string,processStates:string[],setState:string,
+    postData:any,
+    onComplete?: (result:any)=>Promise<any> ,
+    onError?: (error:any)=>Promise<any> 
+  }>() 
+)
+export const doPutAPIAction=createAction(
+  '[FeatureState/API]Put API',
+  props<{ contextName?:string,replaceEndpoint?:string,
+    service?:string,processStates:string[],setState:string,
     postData:any,
     onComplete?: (result:any)=>Promise<any> ,
     onError?: (error:any)=>Promise<any> 

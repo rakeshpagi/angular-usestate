@@ -6,10 +6,10 @@ import { EffectsModule } from '@ngrx/effects';
 import * as fromFeatureState from './+state/feature-state.reducer';
 import { FeatureStateEffects } from './+state/feature-state.effects';
 import { UseApiStateDirective, UseFormStateDirective, UseStateDirective } from './directives/data.directive';
-import { AssignObjectPipe, CallFunctionPipe, FilterArrayPipe, FilterLikeArrayPipe, GroupbyArrayPipe, MapValuePipe, ReadStatePipe, SumOfPipe, TypeOfPipe } from './pipes/data.pipe';
+import { AddSysdatePipe, AssignObjectPipe, CallFunctionPipe, FilterArrayPipe, FilterLikeArrayPipe, GroupbyArrayPipe, IntegerRangePipe, MapObjectPipe, MapValuePipe, MergeArrayArrayPipe, ReadStatePipe, ResolveArrayPipe, ResolvePipe, SumOfPipe, TimeoutPipe, TypeOfPipe, UpdateEntityPipe } from './pipes/data.pipe';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FormFieldComponent } from './ui/forms/form-field/form-field.component';
-import { PostAPIActionDirective, SetStateActionDirective } from './directives/action.directive';
+import { DeleteApiActionDirective, PostAPIActionDirective, PutApiActionDirective, SetStateActionDirective } from './directives/action.directive';
 import { RouterModule } from '@angular/router';
 
 
@@ -29,18 +29,22 @@ import { RouterModule } from '@angular/router';
           AutofocusDirective,
           SetStateActionDirective,PostAPIActionDirective,
             ReadStatePipe,SumOfPipe,FilterArrayPipe,
-          FilterLikeArrayPipe,GroupbyArrayPipe,AssignObjectPipe,
-        MapValuePipe,CallFunctionPipe, FormFieldComponent,TypeOfPipe],
+          FilterLikeArrayPipe,GroupbyArrayPipe,AssignObjectPipe,DeleteApiActionDirective,PutApiActionDirective,
+        MapValuePipe,CallFunctionPipe, FormFieldComponent,TypeOfPipe,TimeoutPipe, UpdateEntityPipe,IntegerRangePipe,
+        MapObjectPipe,ResolvePipe,ResolveArrayPipe,MergeArrayArrayPipe,
+        AddSysdatePipe,
+       ],
                
   exports: [
     FormFieldComponent,
     FormsModule,ReactiveFormsModule,
     UseFormStateDirective,UseApiStateDirective,
-    AutofocusDirective,SetStateActionDirective,PostAPIActionDirective,
+    AutofocusDirective,SetStateActionDirective,PostAPIActionDirective,DeleteApiActionDirective,PutApiActionDirective,
     UseUnderlineDirective,UseStateDirective,ReadStatePipe,
   SumOfPipe,FilterArrayPipe,FilterLikeArrayPipe,GroupbyArrayPipe,
 AssignObjectPipe,MapValuePipe,CallFunctionPipe, FormFieldComponent,
-    TypeOfPipe
+    MapObjectPipe,ResolvePipe,ResolveArrayPipe,MergeArrayArrayPipe,
+    TypeOfPipe,TimeoutPipe,UpdateEntityPipe,IntegerRangePipe,AddSysdatePipe
   ],
 })
 export class AngularUsestateModule {}

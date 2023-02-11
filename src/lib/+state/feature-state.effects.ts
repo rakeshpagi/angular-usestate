@@ -37,7 +37,7 @@ export class FeatureStateEffects {
       this.actions$.pipe(
         ofType(FeatureStateActions.loadAPIData),
         mergeMap(action=> this.apiservice.getAPI( 
-               action.contextName||'',action.useEndpoint,  action.serviceName,action.queryParams||{})
+               action.contextName,action.useEndpoint,  action.serviceName,action.queryParams||{})
                .pipe(
               tap(result=>{
                    console.log(result);
@@ -91,11 +91,18 @@ export class FeatureStateEffects {
      //tap( ([action,state])=> console.log(` ${JSON.stringify(action)} :  ${JSON.stringify(state)}`) ),
      mergeMap( ([action,state])=> this.apiservice.postAPI( action.replaceEndpoint,
         action.contextName,  action.service,
+            action.isMultipart? 
+            ( this.mergeFormData(action.formdata || (new FormData()) ,{
+              ...( action.processStates.map(s=>state[s]??'' ) )
+              .reduce( (p,c)=>({...p, ...(Object.assign(p,c))   }), {} ),
+              ...action.postData,
+            } ))
+            : 
              {  
                ...( action.processStates.map(s=>state[s]??'' ) )
                     .reduce( (p,c)=>({...p, ...(Object.assign(p,c))   }), {} ),
-               ...action.postData,
-             }
+               ...action.postData,               
+             }, action.isMultipart?{'Content-Typee':'multipart/form-data'}:{}
            ).pipe( 
              tap(result=>{
                  if(action.onComplete ){
@@ -108,11 +115,93 @@ export class FeatureStateEffects {
                  } 
              }),
              map(result=> FeatureStateActions.setFeatureState({stateName:action.setState,value:result}) 
-           )),
+            ),
+            catchError( (err)=>{
+              if(action.onError){
+                  action.onError(err);
+              }
+             return of(FeatureStateActions.loadFeatureStateFailure({...err}))
+            } )
+           ),
+         )              
+  ),  
+);   
+  callPutServiceAction$=createEffect(()=>
+  this.actions$.pipe(
+     ofType(FeatureStateActions.doPutAPIAction),
+     withLatestFrom(this.store.select(getFeatureState) ),
+     //tap( ([action,state])=> console.log(` ${JSON.stringify(action)} :  ${JSON.stringify(state)}`) ),
+     mergeMap( ([action,state])=> this.apiservice.putAPI( action.replaceEndpoint,
+        action.contextName,  action.service,
+             {  
+               ...( action.processStates.map(s=>state[s]??'' ) )
+                    .reduce( (p,c)=>({...p, ...(Object.assign(p,c))   }), {} ),
+               ...action.postData,
+             }
+           ).pipe( 
+             tap(result=>{
+                 if(action.onComplete ){
+                       try{
+                           action.onComplete(result);                           
+                       }catch(e){
+                           console.log(e)
+                       }
+                 } 
+             }),
+             map(result=> FeatureStateActions.setFeatureState({stateName:action.setState,value:result})  ),
+           catchError( (err)=>{
+            if(action.onError){
+                action.onError(err);
+            }
+             return of(FeatureStateActions.loadFeatureStateFailure({...err}))
+          } )
+          ),
+         )              
+  ),  
+);   
+  deleteServiceAction$=createEffect(()=>
+  this.actions$.pipe(
+     ofType(FeatureStateActions.doDeleteAPIAction),
+     withLatestFrom(this.store.select(getFeatureState) ),
+     //tap( ([action,state])=> console.log(` ${JSON.stringify(action)} :  ${JSON.stringify(state)}`) ),
+     mergeMap( ([action,state])=> this.apiservice.deleteAPI( action.replaceEndpoint,
+        action.contextName,  action.service,{}             
+           ).pipe( 
+             tap(result=>{
+                 if(action.onComplete ){
+                       try{
+                           action.onComplete(result); 
+                          // console.log(`Will Set State to ${action.setState}`)
+                       }catch(e){
+                          // console.log(e)
+                       }
+                 } 
+             }),
+             map(result=> FeatureStateActions.setFeatureState({stateName:action.setState,value:result}) ),
+           catchError( (err)=>{
+            if(action.onError){
+                action.onError(err);
+            }
+           return of(FeatureStateActions.loadFeatureStateFailure({...err}))
+          } )
+           ),
+           
          )              
   ),  
 );   
 
   constructor(private readonly actions$: Actions,private apiservice:NgrxApiService,
            private store:Store) {}
+
+           mergeFormData(formData:FormData,json:any){
+            //
+             if(formData){
+                 Object.keys(json).forEach(key=>{
+                     if(!formData.has(key))
+                        formData.append(key,json[key])
+                 })
+             }
+             return formData;
+         }
+
 }

@@ -17,6 +17,7 @@ Install Using : npm i --legacy-peer-deps angular-usestate in case Using incompat
 ### Pre-Requisite Setup in Root Module
 - StoreModule.forRoot({})
 - EffectsModule.forRoot({})
+- RouterModule.forRoot([])
 - HttpClientModule
 
 ## EXAMPLE CODE
@@ -38,7 +39,9 @@ Install Using : npm i --legacy-peer-deps angular-usestate in case Using incompat
          </textarea>
      </use-form-field>
     
-     <button doPostAPIAction="savedata" [postData]="{someOtherParam:'YES'}" (actionComplete)="alert('Saved..');" >SAVE</button>
+     <button doPostAPIAction="savedata" [postData]="{someOtherParam:'YES'}"  (actionComplete)="alert('Saved..');" >SAVE</button>
+     <button doPutAPIAction="updatedata" [postData]="{someOtherParam:'NO'}"  (actionComplete)="alert('Updated..');" >UPDATE</button>
+
      <button (click)="form.reset()" >RESET</button>
     <hr>
      *** This will Post Data inside Form State + [postData] attribute payload to API : Amazing Ya .. 
@@ -69,8 +72,16 @@ Install Using : npm i --legacy-peer-deps angular-usestate in case Using incompat
 - filterLikeArray
 - groupBy
 - assignObject
-- mapValue
+- mapTo
+- mapToObject
+- resolve
+- resolveArray
 - extendArray
+- typeOf
+- timeout
+- integers
+- addSysdate
+- mergeArrayOfArray
  
 You can specify the API-ENDPOINT in providers array : 
 ```javascript

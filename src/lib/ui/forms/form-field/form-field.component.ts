@@ -63,6 +63,8 @@ export class FormFieldComponent implements OnInit,AfterViewInit {
   @Input()
   optionValue?:string
 
+  file!:File
+
   @Input()
   set value(v:any){
       if(this.formControl){
@@ -124,6 +126,7 @@ export class FormFieldComponent implements OnInit,AfterViewInit {
         }
        
        this.checkDate(); 
+       
   }
   ngAfterViewInit(): void {
        //console.log();
@@ -144,6 +147,14 @@ export class FormFieldComponent implements OnInit,AfterViewInit {
           // 
       }
   }
+  selectFILE(event:any){
+    if(event.target?.files?.length>0){
+       this.file=event.target.files[0];
+       console.log(`File Selected :  `,this.file);
+       
+    }
+}
+
   
   ngOnChanges(changes: SimpleChanges): void {
       //console.log(`fChange : ${this._init} :${this.name} = ${this.formControl.value}`); 
@@ -157,5 +168,6 @@ export class FormFieldComponent implements OnInit,AfterViewInit {
    //      console.log(v); 
         const newvalue =    v? dayjs(v).format('YYYY-MM-DD'):null; // Corrected for Null Value V          
         this.formControl.patchValue(newvalue);
+        this.datevalue=newvalue;
   }
 }

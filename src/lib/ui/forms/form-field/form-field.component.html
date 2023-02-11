@@ -2,6 +2,7 @@
     <label for="" *ngIf="label" class="form-label">{{label}}</label>
     <ng-container [ngSwitch]="fieldType">
          <ng-container *ngSwitchCase="'input'" [ngTemplateOutlet]="input"> </ng-container>
+         <ng-container *ngSwitchCase="'file'" [ngTemplateOutlet]="file"> </ng-container>
          <ng-container *ngSwitchCase="'select'" [ngTemplateOutlet]="select"> </ng-container>
          <ng-container *ngSwitchCase="'date'" [ngTemplateOutlet]="date"> </ng-container>
          <ng-container *ngSwitchCase="'textarea'" [ngTemplateOutlet]="textarea"> </ng-container>
@@ -28,27 +29,40 @@
              [formControl]="formControl"   >                            
     <!-- </div> -->
 </ng-template>
+
+<ng-template #file let-type="type">
+     
+     <input [formGroup]="formgroup.form" [type]="type||'input'"  
+          (change)="selectFILE($event)"
+           [name]="name"  [useAutoFocus]="autofocus"  [required]="required"
+          autocomplete="off" class="form-control form-select-sm mb-1"
+         [formControl]="formControl"   >
+</ng-template>
+
 <ng-template #select>
     <!-- <div class=" block p-0" [ngClass]="{'p-input-icon-left':inputIcon}" >           -->
-          <select [formGroup]="formgroup.form" [name]="name" [required]="required" (change)="this.onchange.emit($event)" >
+          <select [formGroup]="formgroup.form" [name]="name" 
+               [formControl]="formControl"
+               [required]="required" (change)="this.onchange.emit($event)" >
                <option value="" label="Select" ></option>
-               <option *ngFor="let item of (options||[]);" [value]="item" [label]="optionLabel?item[optionLabel]:item.toString()" >
+               <option *ngFor="let item of (options||[]);" [value]="optionValue? item[optionValue]:item" [label]="optionLabel?item[optionLabel]:item.toString()" >
                </option>
           </select>    
-         <input [attr.placeholder]="placeholder"   [formGroup]="formgroup.form" [name]="name"
+         <!-- <input [attr.placeholder]="placeholder"   [formGroup]="formgroup.form" [name]="name"
            [useAutoFocus]="autofocus"  [required]="required"
               autocomplete="off" [class]="inputClass||' form-control '"
               [ngClass]="{'form-control-sm':true}"
               (input)="oninput.next(formControl.value)"
-             [formControl]="formControl"   >                                
+             [formControl]="formControl"   >                                 -->
     <!-- </div> -->
 </ng-template>
 <ng-template #date>
     <input type="date" [name]="name" [class]="inputClass||'form-control'"
-          [ngClass]="{'form-control-sm':small}"
-          [(ngModel)]="datevalue" (ngModelChange)="updateDate($event)"
+          [required]="required"
+          [ngClass]="{'form-control-sm':small}" [formControl]="formControl" [formGroup]="formgroup.form"
           [useAutoFocus]="autofocus" [placeholder]="placeholder"
-             >          
+          >          
+          <!-- [(ngModel)]="datevalue" (ngModelChange)="updateDate($event)" -->
     <!-- <p-calendar [showOnFocus]="showOnFocus" [showIcon]="showdateIcon" 
          styleClass="  w-full   " 
         panelStyleClass="  p-0 m-0" 
